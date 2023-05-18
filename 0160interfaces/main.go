@@ -48,4 +48,9 @@ func main() {
 	c2 := new(circle)
 	c2.radius = 1.25
 	measure(c2)
+
+	var i interface{}
+	i = 1
+	integer := i.(int)
+	fmt.Println(integer)
 }
