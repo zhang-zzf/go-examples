@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -11,10 +12,11 @@ import (
 var db *sql.DB
 
 type Album struct {
-	ID     int64   `json:"id"`
-	Title  string  `json:"title"`
-	Artist string  `json:"artist"`
-	Price  float32 `json:"price"`
+	ID       int64   `json:"id"`
+	Title    string  `json:"title"`
+	Artist   string  `json:"artist"`
+	Price    float32 `json:"price"`
+	Quantity int     `json:"quantity"`
 }
 
 func main() {
@@ -48,7 +50,7 @@ func main() {
 		log.Fatal(err)
 	}
 	albumJson, _ := json.Marshal(album)
-	fmt.Printf("Album By Id %d: %s", id, string(albumJson))
+	fmt.Printf("Album By Id %d: %s\n", id, string(albumJson))
 	_, err = addAlbum(Album{
 		Title:  "zhang.zzf",
 		Artist: "zhang.zzf",
@@ -57,6 +59,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	ctx := context.Background()
+	orderID, err := CreateOrder(ctx, 3, 2, 1)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("create new order: %d\n", orderID)
 }
 
 func albumsByArtist(name string) ([]Album, error) {
@@ -85,7 +93,7 @@ func albumsByArtist(name string) ([]Album, error) {
 func albumById(id int64) (Album, error) {
 	var r Album
 	row := db.QueryRow("select * from album where `id` = ?", id)
-	if err := row.Scan(&r.ID, &r.Title, &r.Artist, &r.Price); err != nil {
+	if err := row.Scan(&r.ID, &r.Title, &r.Artist, &r.Price, &r.Quantity); err != nil {
 		if err == sql.ErrNoRows {
 			return r, fmt.Errorf("albumById %d: no such album", id)
 		}
@@ -105,4 +113,50 @@ func addAlbum(alb Album) (int64, error) {
 		return 0, err
 	}
 	return id, nil
+}
+
+func CreateOrder(ctx context.Context, albumID, quantity, custID int) (int64, error) {
+	fail := func(err error) (int64, error) {
+		return 0, fmt.Errorf("CreateOrder: %v", err)
+	}
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return fail(err)
+	}
+	//Defer a rollback in case anything fails
+	defer tx.Rollback()
+	// Confirm that album inventory is enough for the order.
+	var enough bool
+	err = tx.
+		QueryRowContext(ctx, "select (quantity>?) from album where id = ?", quantity, albumID).
+		Scan(&enough)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fail(fmt.Errorf("no such album: %d", albumID))
+		}
+		return fail(err)
+	}
+	if !enough {
+		return fail(fmt.Errorf("not enough quantity"))
+	}
+	// Update the album inventory to remove quantity in the order.
+	_, err = tx.ExecContext(ctx, "update album set quantity = quantity-? where id = ?", quantity, albumID)
+	if err != nil {
+		return fail(err)
+	}
+	result, err := tx.ExecContext(ctx, "insert into album_order(album_id, custom_id, quantity) values (?,?,?)",
+		albumID, custID, quantity)
+	if err != nil {
+		return fail(err)
+	}
+	// get the ID of the order item just created
+	var orderID int64
+	if orderID, err = result.LastInsertId(); err != nil {
+		return fail(err)
+	}
+	// Commit the transaction
+	if err = tx.Commit(); err != nil {
+		return fail(err)
+	}
+	return orderID, nil
 }
