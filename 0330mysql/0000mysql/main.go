@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"log"
+	"time"
 )
 
 var db *sql.DB
@@ -159,4 +160,17 @@ func CreateOrder(ctx context.Context, albumID, quantity, custID int) (int64, err
 		return fail(err)
 	}
 	return orderID, nil
+}
+
+func _(ctx context.Context) {
+	queryCtx, cancel := context.WithTimeout(ctx, time.Second*1)
+	defer cancel()
+	rows, err := db.QueryContext(queryCtx, "select * from album")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func(rows *sql.Rows) {
+		_ = rows.Close()
+	}(rows)
+	// Handle returned rows
 }
