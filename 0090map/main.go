@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
 	m := make(map[string]string, 3)
@@ -33,4 +35,15 @@ func main() {
 	val, exists = m["key1"]
 	fmt.Printf("val: %v, exists: %v\n", val, exists)
 
+	fmt.Println("check pass map is a reference")
+	m1 := map[int]int{1: -1}
+	fmt.Printf("m1 address: %p\n", m1)
+	// m1 是指向对象的指针，指针值传递
+	changeMapVal(m1)
+	fmt.Printf("map after change:%v\n", m1)
+}
+
+func changeMapVal(m map[int]int) {
+	fmt.Printf("changeMapVal m1 address: %p\n", m)
+	m[1] = 1
 }

@@ -59,4 +59,18 @@ func main() {
 	s2 = append(s2, 7)
 	fmt.Println("s2 after append2: ", s2, len(s2), cap(s2))
 
+	// 遍历
+	squares := []int{1, 4, 9, 16, 25}
+	aSlice1 := squares[:]
+	for idx, val := range aSlice1 {
+		if val == 9 {
+			fmt.Println(idx)
+		}
+	}
+	for i := 0; i < len(squares); i++ {
+		if squares[i] == 0 {
+			fmt.Println(i)
+		}
+	}
+
 }
