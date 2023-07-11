@@ -14,8 +14,10 @@ func main() {
 	fmt.Println(s, len(s))
 
 	for i := 0; i < len(s); i++ {
+		// uint8 [0-255] 无符号 byte
+		var u uint8 = s[i]
 		// e4 bd a0 e5 a5 bd ef bc 8c e4 b8 96 e7 95 8c
-		fmt.Printf("%x ", s[i])
+		fmt.Printf("%x ", u)
 	}
 
 	fmt.Println()

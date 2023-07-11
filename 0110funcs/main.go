@@ -40,11 +40,11 @@ func main() {
 }
 
 func sum(nums ...int) int {
-	sum := 0
+	ans := 0
 	for _, num := range nums {
-		sum += num
+		ans += num
 	}
-	return sum
+	return ans
 }
 
 func plus2(a, b, c int) int {
