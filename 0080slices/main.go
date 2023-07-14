@@ -73,4 +73,12 @@ func main() {
 		}
 	}
 
+	// append
+	var aSlice2 []int
+	// error
+	// aSlice2 = append(aSlice2, nil)
+	aSlice2 = append(aSlice2, nil...)
+	aSlice2 = append(aSlice2, aSlice1...)
+	fmt.Println(aSlice2)
+
 }
