@@ -37,6 +37,18 @@ func main() {
 	p(absPath())
 	p(workingDir())
 	p("----------")
+	readDir("/tmp")
+	readDir("/tmp/")
+}
+func readDir(dir string) {
+	open, _ := os.Open(dir)
+	entries, _ := open.ReadDir(0)
+	for _, entry := range entries {
+		fmt.Println(entry.Name(), entry.IsDir(), entry.Type())
+		info, _ := entry.Info()
+		fmt.Println(info.Name(), info.IsDir(), info.Mode(), info.ModTime(), info.Size())
+	}
+
 }
 
 func execFile() string {

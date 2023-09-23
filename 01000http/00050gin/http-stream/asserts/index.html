@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>index.html</title>
+    <link rel="stylesheet" href="/static/css/plyr.css"/>
+</head>
+<body>
+<div class="container">
+    <video controls crossorigin playsinline poster="/videos/abc.png/pic">
+        <source src="/videos/abc.mp4/stream" type="video/mp4" size="1080">
+        <a href="/videos/abc.mp4/stream" download>Download</a>
+    </video>
+</div>
+<!-- Plyr resources and browser polyfills are specified in the pen settings -->
+<script src="static/js/plyr.js"></script>
+<script>
+    const player = new Plyr('#player', {captions: {active: true}});
+    window.player = player;
+</script>
+</body>
+</html>

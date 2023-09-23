@@ -48,4 +48,14 @@ func main() {
 	whatAmI(5)
 	whatAmI(whatAmI)
 
+	str := ""
+	switch str {
+	case "":
+		fmt.Println("")
+	case "H":
+		fmt.Println("H")
+	default:
+		fmt.Println("unKnown")
+	}
+
 }
