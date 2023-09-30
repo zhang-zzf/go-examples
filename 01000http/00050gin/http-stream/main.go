@@ -11,17 +11,15 @@ import (
 func main() {
 	engine := gin.Default()
 	engine.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
+		c.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
 	engine.GET("/videos/:view_key/stream", GetVideoStream)
 	engine.GET("/videos/:view_key/pic", GetVideoPic)
 	// index.html
-	engine.StaticFile("/", "./asserts/index.html")
-	engine.StaticFile("/favicon.ico", "./asserts/favicon.ico")
-	// asserts
-	engine.Static("/static", "./asserts")
+	engine.StaticFile("/", "./assets/index.html")
+	engine.StaticFile("/favicon.ico", "./assets/favicon.ico")
+	// assets
+	engine.Static("/assets", "./assets")
 	engine.Run("0.0.0.0:80")
 }
 

@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	fs := http.FileServer(http.Dir("asserts/"))
+	fs := http.FileServer(http.Dir("assets/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.ListenAndServe(":80", nil)
 }
